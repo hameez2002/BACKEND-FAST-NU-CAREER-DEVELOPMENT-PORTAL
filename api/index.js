@@ -17,8 +17,8 @@ mongoose.connect(
   "mongodb+srv://hameezahmed23:nMbGO9kRfXZ1xKje@cluster0.zrq5jo8.mongodb.net/?retryWrites=true&w=majority"
 );
 
-app.post("/newsfeed/post", uploadMiddleware.single("file"), async (req, res) => {
-  console.log('Hello');
+app.post("/newsfeed/createPost", uploadMiddleware.single("file"), async (req, res) => {
+  console.log('Hellopost');
   const { originalname, path } = req.file;
   const parts = originalname.split(".");
   const ext = parts[parts.length - 1];
@@ -36,6 +36,7 @@ app.post("/newsfeed/post", uploadMiddleware.single("file"), async (req, res) => 
 });
 
 app.put("/newsfeed/post", uploadMiddleware.single("file"), async (req, res) => {
+  console.log("helloput");
   let newPath = null;
   if (req.file) {
     const { originalname, path } = req.file;
@@ -67,8 +68,16 @@ app.delete("/newsfeed/delete/:id", async (req, res) => {
       return res.status(404).json({ error: "Post not found" });
     }
 
+    // if (postDoc.cover) {
+    //   fs.unlinkSync(postDoc.cover);
+    // }
     if (postDoc.cover) {
-      fs.unlinkSync(postDoc.cover);
+      try {
+        fs.unlinkSync(postDoc.cover);
+      } catch (error) {
+        console.error("Failed to delete file:", error);
+        // Handle error (e.g., log it, notify admin)
+      }
     }
 
     await Post.findByIdAndDelete(id);
@@ -81,11 +90,14 @@ app.delete("/newsfeed/delete/:id", async (req, res) => {
 });
 
 app.get("/newsfeed/post", async (req, res) => {
+  console.log("hello2");
   res.json(await Post.find().sort({ createdAt: -1 }).limit(20)); //.populate('author', ['username'])
 });
 
 app.get("/newsfeed/post/:id", async (req, res) => {
+  console.log("hello1");
   const { id } = req.params;
+  
   const postDoc = await Post.findById(id); //.populate('author', ['username']);
   res.json(postDoc);
 });
