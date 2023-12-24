@@ -14,9 +14,9 @@ app.use("/uploads", express.static(__dirname + "/uploads"));
 
 mongoose.set("strictQuery", false);
 mongoose.connect(
-  "mongodb+srv://hameezahmed23:nMbGO9kRfXZ1xKje@cluster0.zrq5jo8.mongodb.net/?retryWrites=true&w=majority"
+  // "mongodb://hameezahmed23:nMbGO9kRfXZ1xKje@main-shard-00-00-03xkr.mongodb.net:27017,main-shard-00-01-03xkr.mongodb.net:27017,main-shard-00-02-03xkr.mongodb.net:27017/main?ssl=true&replicaSet=Main-shard-0&authSource=admin&retryWrites=true"
+  "mongodb+srv://hameezahmed23:hameez12@cluster0.zrq5jo8.mongodb.net/?retryWrites=true&w=majority"
 );
-
 app.post("/newsfeed/createPost", uploadMiddleware.single("file"), async (req, res) => {
   console.log('Hellopost');
   const { originalname, path } = req.file;
