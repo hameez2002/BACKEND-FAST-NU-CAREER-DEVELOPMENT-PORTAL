@@ -28,6 +28,7 @@ const Post = require("./api/models/Post");
 const multer = require("multer");
 const uploadMiddleware = multer({ dest: "uploads/" });
 const fs = require("fs");
+app.use("/uploads", express.static(__dirname + "/uploads"));
 app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 app.use(express.json());
 app.use("/uploads", express.static(__dirname + "/uploads"));
