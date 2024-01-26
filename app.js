@@ -30,7 +30,7 @@ const multer = require("multer");
 const uploadMiddleware = multer({ dest: "uploads/" });
 const fs = require("fs");
 app.use("/uploads", express.static(__dirname + "/uploads"));
-app.use(cors({ credentials: true, origin: process.env.FRONTEND_API }));
+app.use(cors({ credentials: true, origin: process.env.PORT }));
 app.use(express.json());
 app.use("/uploads", express.static(__dirname + "/uploads"));
 
