@@ -3,15 +3,18 @@ const con = require("../db.js");
 module.exports = (req, res) => {
   console.log("Received request body:", req.body);
   const {
-    jobTitle: Title,
-    jobDescription: Description,
-    jobLink: Link,
-    deadlineDate: Deadline,
-    jobType: Type,
+    jobTitle: title,
+    noofopeinings: no_of_openings,
+    qualificationsReq: qualification_req,
+    jobDescription: job_description,
+    Responsibilities: responsibilities,
+    About: about,
+    jobStatus: job_status,
+    jobType: job_type
   } = req.body;
   const sql =
-    "INSERT INTO jobs (Title, Type, Description, Link, Deadline) VALUES (?, ?, ?, ?, ?)";
-  con.query(sql, [Title, Type, Description, Link, Deadline], (err, result) => {
+    "INSERT INTO jobs (title, job_type, no_of_openings, qualification_req, job_description, responsibilities, about, job_status) VALUES (?, ?, ?, ?, ?,?,?,?)";
+  con.query(sql, [title, job_type, no_of_openings, qualification_req, job_description, responsibilities, about, job_status], (err, result) => {
     if (err) {
       console.error("Error during query execution:", err);
       throw err;
