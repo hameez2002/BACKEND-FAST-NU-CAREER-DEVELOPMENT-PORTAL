@@ -1,11 +1,15 @@
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
+const verifyToken = require("./Middleware/verifyToken.js");
 const jobsPost = require("./Routes/jobsPost.js");
 const jobsGet = require("./Routes/jobsGet.js");
 const jobsDelete = require("./Routes/jobsDelete.js");
 const jobsEdit = require("./Routes/jobsEdit.js");
 const partialJobsEdit = require("./Routes/partialJobsEdit.js");
+
+const registerUser = require("./Routes/registerUser.js");
+const loginUser = require("./Routes/loginUser.js");
 
 const app = express();
 const port = process.env.PORT || 7000;
@@ -14,12 +18,20 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 app.use(bodyParser.json());
 
+// app.post("/jobs", verifyToken, jobsPost);
+// app.get("/jobs", verifyToken, jobsGet);
+// app.delete("/jobs/:id", verifyToken, jobsDelete);
+// app.put("/jobs/:id", verifyToken, jobsEdit);
+// app.patch("/jobs/:id", verifyToken, partialJobsEdit);
+
 app.post("/jobs", jobsPost);
 app.get("/jobs", jobsGet);
 app.delete("/jobs/:id", jobsDelete);
 app.put("/jobs/:id", jobsEdit);
 app.patch("/jobs/:id", partialJobsEdit);
 
+app.post("/register", registerUser);
+app.post("/login", loginUser);
 
 const mongoose = require("mongoose");
 
@@ -37,23 +49,27 @@ mongoose.connect(
   "mongodb+srv://hameezahmed23:nMbGO9kRfXZ1xKje@cluster0.zrq5jo8.mongodb.net/?retryWrites=true&w=majority"
 );
 
-app.post("/newsfeed/createPost", uploadMiddleware.single("file"), async (req, res) => {
-  console.log('Hellopost');
-  const { originalname, path } = req.file;
-  const parts = originalname.split(".");
-  const ext = parts[parts.length - 1];
-  const newPath = path + "." + ext;
-  fs.renameSync(path, newPath);
+app.post(
+  "/newsfeed/createPost",
+  uploadMiddleware.single("file"),
+  async (req, res) => {
+    console.log("Hellopost");
+    const { originalname, path } = req.file;
+    const parts = originalname.split(".");
+    const ext = parts[parts.length - 1];
+    const newPath = path + "." + ext;
+    fs.renameSync(path, newPath);
 
-  const { title, summary, content } = req.body;
-  const postDoc = await Post.create({
-    title,
-    summary,
-    content,
-    cover: newPath,
-  });
-  res.json(postDoc);
-});
+    const { title, summary, content } = req.body;
+    const postDoc = await Post.create({
+      title,
+      summary,
+      content,
+      cover: newPath,
+    });
+    res.json(postDoc);
+  }
+);
 
 app.put("/newsfeed/post", uploadMiddleware.single("file"), async (req, res) => {
   console.log("helloput");
@@ -117,11 +133,9 @@ app.get("/newsfeed/post", async (req, res) => {
 app.get("/newsfeed/post/:id", async (req, res) => {
   console.log("hello1");
   const { id } = req.params;
-  
+
   const postDoc = await Post.findById(id); //.populate('author', ['username']);
   res.json(postDoc);
 });
 
-
 app.listen(port, () => console.log(`server running on ${port}`));
-
