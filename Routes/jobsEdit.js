@@ -1,15 +1,15 @@
 const con = require("../db.js");
 
 module.exports = async (req, res) => {
-  const jobId = req.params.id;
-  const { jobTitle, jobType, jobDescription, deadlineDate, jobLink } = req.body;
+  const job_id = req.params.job_id;
+  const { title, job_type, no_of_openings, qualification_req, job_description, responsibilities, about, job_status } = req.body;
 
   try {
     const sql =
-      "UPDATE jobs SET Title = ?, Type = ?, Description = ?, Deadline = ?, Link = ? WHERE ID = ?";
+      "UPDATE jobs SET title = ?, job_type = ?, no_of_openings = ?, qualification_req = ?, job_description = ?, responsibilities = ?, about = ?, job_status= ? WHERE job_id = ?";
     con.query(
       sql,
-      [jobTitle, jobType, jobDescription, deadlineDate, jobLink, jobId],
+      [title, job_type, no_of_openings, qualification_req, job_description, responsibilities, about, job_status, job_id],
       (err, results) => {
         if (err) {
           console.error("Error during query execution:", err);
@@ -17,7 +17,7 @@ module.exports = async (req, res) => {
         } else if (results.affectedRows === 0) {
           res
             .status(404)
-            .json({ error: "Job posting not found for ID: " + jobId });
+            .json({ error: "Job posting not found for ID: " + job_id});
         } else {
           res.status(200).send("Job updated successfully");
         }

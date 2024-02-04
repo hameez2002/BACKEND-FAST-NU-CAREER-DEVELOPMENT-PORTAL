@@ -7,12 +7,13 @@ const jobsGet = require("./Routes/jobsGet.js");
 const jobsDelete = require("./Routes/jobsDelete.js");
 const jobsEdit = require("./Routes/jobsEdit.js");
 const partialJobsEdit = require("./Routes/partialJobsEdit.js");
+require("dotenv").config();
 
 const registerUser = require("./Routes/registerUser.js");
 const loginUser = require("./Routes/loginUser.js");
 
 const app = express();
-const port = process.env.PORT || 7000;
+const port = process.env.PORT ;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
@@ -40,15 +41,18 @@ const Post = require("./api/models/Post");
 const multer = require("multer");
 const uploadMiddleware = multer({ dest: "uploads/" });
 const fs = require("fs");
-app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+app.use("/uploads", express.static(__dirname + "/uploads"));
+app.use(cors({ credentials: true, origin: process.env.PORT }));
 app.use(express.json());
-app.use("/uploads", express.static(__dirname + "/api/uploads"));
+app.use("/uploads", express.static(__dirname + "/uploads"));
 
 mongoose.set("strictQuery", false);
-mongoose.connect(
-  "mongodb+srv://hameezahmed23:nMbGO9kRfXZ1xKje@cluster0.zrq5jo8.mongodb.net/?retryWrites=true&w=majority"
-);
-
+// mongoose.connect(
+//   // "mongodb://hameezahmed23:nMbGO9kRfXZ1xKje@main-shard-00-00-03xkr.mongodb.net:27017,main-shard-00-01-03xkr.mongodb.net:27017,main-shard-00-02-03xkr.mongodb.net:27017/main?ssl=true&replicaSet=Main-shard-0&authSource=admin&retryWrites=true"
+//   "mongodb://hameezahmed23:hameez12@cluster0.zrq5jo8.mongodb.net/?retryWrites=true&w=majority"
+// );
+mongoose.connect(process.env.MONGODB_CONNECT_URI);
+// console.log(process.env.MONGODB_CONNECT_URI);
 app.post(
   "/newsfeed/createPost",
   uploadMiddleware.single("file"),
