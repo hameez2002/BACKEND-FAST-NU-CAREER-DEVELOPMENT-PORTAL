@@ -3,7 +3,8 @@ const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 
 module.exports = async (req, res) => {
-  const { user_id, password, user_roles, email, name } = req.body;
+  const { user_id, password, email, name } = req.body;
+  const user_roles = req.body.user_roles || "";
 
   try {
     // Check if the user already exists
@@ -40,26 +41,26 @@ module.exports = async (req, res) => {
           res.status(500).json({ error: "Internal Server Error" });
         } else {
           // Send a welcome email
-        //   try {
-        //     const transporter = nodemailer.createTransport({
-        //       host: "127.0.0.1",
-        //       port: 1025,
-        //       secure: false,
-        //       auth: {
-        //         user: "cdp-portal@proton.me",
-        //         pass: "Cdp123_321",
-        //       },
-        //     });
+          //   try {
+          //     const transporter = nodemailer.createTransport({
+          //       host: "127.0.0.1",
+          //       port: 1025,
+          //       secure: false,
+          //       auth: {
+          //         user: "cdp-portal@proton.me",
+          //         pass: "Cdp123_321",
+          //       },
+          //     });
 
-        //     await transporter.sendMail({
-        //       from: "cdp-portal@proton.me",
-        //       to: email,
-        //       subject: "Welcome to Your App",
-        //       text: "Thank you for registering with Your App!",
-        //     });
-        //   } catch (emailError) {
-        //     console.error("Error sending welcome email:", emailError);
-        //   }
+          //     await transporter.sendMail({
+          //       from: "cdp-portal@proton.me",
+          //       to: email,
+          //       subject: "Welcome to Your App",
+          //       text: "Thank you for registering with Your App!",
+          //     });
+          //   } catch (emailError) {
+          //     console.error("Error sending welcome email:", emailError);
+          //   }
 
           res.status(201).json({ message: "User registered successfully" });
         }
