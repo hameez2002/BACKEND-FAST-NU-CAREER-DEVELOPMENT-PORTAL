@@ -1,7 +1,7 @@
 const con = require("../db.js");
 
 module.exports = (req, res) => {
-  const sql = "SELECT * FROM jobs";
+  const sql = "SELECT * FROM cso_jobs";
   con.query(sql, (err, results) => {
     if (err) {
       console.error("Error during query execution:", err);

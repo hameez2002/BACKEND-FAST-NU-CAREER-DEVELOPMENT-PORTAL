@@ -1,9 +1,9 @@
 const con = require("../db.js");
 
 module.exports = (req, res) => {
-  const jobId = req.params.id;
-  const sql = "DELETE FROM jobs WHERE job_id = ?";
-  con.query(sql, [jobId], (err, results) => {
+  const jobID = req.params.id;
+  const sql = "DELETE FROM cso_jobs WHERE job_id = ?";
+  con.query(sql, [jobID], (err, results) => {
     if (err) {
       console.error("Error during query execution:", err);
       res.status(500).json({ error: "Failed to delete job posting" });
