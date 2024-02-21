@@ -2,18 +2,27 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const verifyToken = require("./Middleware/verifyToken.js");
+require("dotenv").config();
+
+//jobs routes
 const jobsPost = require("./Routes/jobsPost.js");
 const jobsGet = require("./Routes/jobsGet.js");
 const jobsDelete = require("./Routes/jobsDelete.js");
 const jobsEdit = require("./Routes/jobsEdit.js");
 const partialJobsEdit = require("./Routes/partialJobsEdit.js");
-require("dotenv").config();
 
+//login
 const registerUser = require("./Routes/registerUser.js");
 const loginUser = require("./Routes/loginUser.js");
 
+//email routes
+const emailRoutes = require("./controllers/emailRoutes");
+
+//user routes
+const profilePost = require("./Routes/userRoutes/profilePost");
+
 const app = express();
-const port = process.env.PORT ;
+const port = process.env.PORT;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
@@ -25,14 +34,22 @@ app.use(bodyParser.json());
 // app.put("/jobs/:id", verifyToken, jobsEdit);
 // app.patch("/jobs/:id", verifyToken, partialJobsEdit);
 
+//job apis
 app.post("/jobs", jobsPost);
 app.get("/jobs", jobsGet);
 app.delete("/jobs/:id", jobsDelete);
 app.put("/jobs/:id", jobsEdit);
 app.patch("/jobs/:id", partialJobsEdit);
 
+//login apis
 app.post("/register", registerUser);
 app.post("/login", loginUser);
+
+//email apis
+app.use("/email", emailRoutes);
+
+//user profile apis
+app.post("/profile", profilePost);
 
 const mongoose = require("mongoose");
 

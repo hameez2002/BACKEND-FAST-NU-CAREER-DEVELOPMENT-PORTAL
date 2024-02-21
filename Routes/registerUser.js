@@ -3,7 +3,7 @@ const bcrypt = require("bcrypt");
 const nodemailer = require("nodemailer");
 
 module.exports = async (req, res) => {
-  const { user_id, password, email, name } = req.body;
+  const { user_id, password, email } = req.body;
   const user_roles = req.body.user_roles || "";
 
   try {
@@ -33,8 +33,8 @@ module.exports = async (req, res) => {
     const hashedPassword = await bcrypt.hash(password, 10);
 
     db.query(
-      "INSERT INTO sign_in (user_id, password, user_roles, email, name) VALUES (?, ?, ?, ?, ?)",
-      [user_id, hashedPassword, user_roles, email, name],
+      "INSERT INTO sign_in (user_id, password, user_roles, email) VALUES (?, ?, ?, ?)",
+      [user_id, hashedPassword, user_roles, email],
       async (err, result) => {
         if (err) {
           console.error(err);
