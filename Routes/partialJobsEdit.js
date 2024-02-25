@@ -104,7 +104,7 @@ module.exports = async (req, res) => {
         "UPDATE cso_jobs SET title = ?, job_type = ?, no_of_openings = ?, qualifications_req = ?, job_description = ?, link = ?, Deadline = ?, responsibilities = ?, about = ?, job_status = ?, posted_on = ?, updated_on = ? WHERE job_id = ?";
 
         con.query(
-          updateSql,
+          sql,
           [
             updatedJob.title,
             updatedJob.job_type,
