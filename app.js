@@ -38,8 +38,8 @@ app.use(bodyParser.json());
 app.post("/jobs", jobsPost);
 app.get("/jobs", jobsGet);
 app.delete("/jobs/:id", jobsDelete);
-app.put("/jobs/:id", jobsEdit);
-app.patch("/jobs/:id", partialJobsEdit);
+app.put("/jobs/:job_id", jobsEdit);
+app.patch("/jobs/:job_id", partialJobsEdit);
 
 //login apis
 app.post("/register", registerUser);

@@ -57,12 +57,26 @@
 const con = require("../db.js");
 
 module.exports = async (req, res) => {
-  const jobId = req.params.id;
-  const { jobTitle, jobType, jobDescription, deadlineDate, jobLink } = req.body;
+  const job_id = req.params.job_id;
+  // const { jobTitle, jobType, jobDescription, deadlineDate, jobLink } = req.body;
+  const {
+    title,
+    no_of_openings,
+    qualifications_req,
+    job_description,
+    link,
+    Deadline,
+    responsibilities,
+    about,
+    job_status,
+    job_type,
+    posted_on,
+    updated_on,
+  } = req.body;
 
   try {
-    const sql = "SELECT * FROM jobs WHERE ID = ?";
-    con.query(sql, [jobId], async (err, rows) => {
+    const sql = "SELECT * FROM cso_jobs WHERE job_id = ?";
+    con.query(sql, [job_id], async (err, rows) => {
       if (err) {
         console.error("Error during query execution:", err);
         res.status(500).json({ error: "Failed to get job posting" });
@@ -72,25 +86,39 @@ module.exports = async (req, res) => {
         const job = rows[0];
 
         const updatedJob = {
-          Title: jobTitle || job.Title,
-          Type: jobType || job.Type,
-          Description: jobDescription || job.Description,
-          Link: jobLink || job.Link,
-          Deadline: deadlineDate || job.Deadline,
+          title: title || job.title,
+          job_type: job_type || job.job_type,
+          no_of_openings: no_of_openings || job.no_of_openings,
+          qualifications_req: qualifications_req || job.qualifications_req,
+          job_description: job_description || job.job_description,
+          link: link || job.link,
+          Deadline: Deadline || job.Deadline,
+          responsibilities: responsibilities || job.responsibilities,
+          about: about || job.about,
+          job_status: job_status || job.job_status,
+          posted_on: posted_on || job.posted_on,
+          updated_on: updated_on || job.updated_on,
         };
 
-        const updateSql =
-          "UPDATE jobs SET title = ?, job_type = ?, no_of_openings = ?, qualification_req = ?, job_description = ?, responsibilities = ?, about = ?, job_status = ? WHERE ID = ?";
+        const sql =
+        "UPDATE cso_jobs SET title = ?, job_type = ?, no_of_openings = ?, qualifications_req = ?, job_description = ?, link = ?, Deadline = ?, responsibilities = ?, about = ?, job_status = ?, posted_on = ?, updated_on = ? WHERE job_id = ?";
 
         con.query(
           updateSql,
           [
-            updatedJob.Title,
-            updatedJob.Type,
-            updatedJob.Description,
+            updatedJob.title,
+            updatedJob.job_type,
+            updatedJob.job_description,
+            updatedJob.qualifications_req,
+            updatedJob.job_description,
+            updatedJob.link,
             updatedJob.Deadline,
-            updatedJob.Link,
-            jobId,
+            updatedJob.responsibilities,
+            updatedJob.about,
+            updatedJob.job_status,
+            updatedJob.posted_on,
+            updatedJob.updated_on,
+            job_id,
           ],
           (err2, results) => {
             if (err2) {

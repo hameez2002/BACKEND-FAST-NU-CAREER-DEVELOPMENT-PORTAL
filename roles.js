@@ -1,5 +1,5 @@
 const ROLES = {
-  CSO: "cso", 
+  CSO: "cso",
   STUDENT: "student",
 };
 

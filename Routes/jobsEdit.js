@@ -2,14 +2,41 @@ const con = require("../db.js");
 
 module.exports = async (req, res) => {
   const job_id = req.params.job_id;
-  const { title, job_type, no_of_openings, qualification_req, job_description, responsibilities, about, job_status } = req.body;
+  const {
+    jobTitle: title,
+    noOfOpenings: no_of_openings,
+    qualificationRequirements: qualifications_req,
+    jobDescription: job_description,
+    jobLink: link,
+    deadlineDate: Deadline,
+    responsibilities,
+    about,
+    jobStatus: job_status,
+    jobType: job_type,
+    postedOn: posted_on,
+    updatedOn: updated_on,
+  } = req.body;
 
   try {
     const sql =
-      "UPDATE jobs SET title = ?, job_type = ?, no_of_openings = ?, qualification_req = ?, job_description = ?, responsibilities = ?, about = ?, job_status= ? WHERE job_id = ?";
+      "UPDATE cso_jobs SET title = ?, job_type = ?, no_of_openings = ?, qualifications_req = ?, job_description = ?, link = ?, Deadline = ?, responsibilities = ?, about = ?, job_status = ?, posted_on = ?, updated_on = ? WHERE job_id = ?";
     con.query(
       sql,
-      [title, job_type, no_of_openings, qualification_req, job_description, responsibilities, about, job_status, job_id],
+      [
+        title,
+        job_type,
+        no_of_openings,
+        qualifications_req,
+        job_description,
+        link,
+        Deadline,
+        responsibilities,
+        about,
+        job_status,
+        posted_on,
+        updated_on,
+        job_id,
+      ],
       (err, results) => {
         if (err) {
           console.error("Error during query execution:", err);
@@ -17,7 +44,7 @@ module.exports = async (req, res) => {
         } else if (results.affectedRows === 0) {
           res
             .status(404)
-            .json({ error: "Job posting not found for ID: " + job_id});
+            .json({ error: "Job posting not found for ID: " + job_id });
         } else {
           res.status(200).send("Job updated successfully");
         }
