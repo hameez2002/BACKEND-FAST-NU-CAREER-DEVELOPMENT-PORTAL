@@ -3,18 +3,18 @@ const con = require("../db.js");
 module.exports = async (req, res) => {
   const job_id = req.params.job_id;
   const {
-    jobTitle: title,
-    noOfOpenings: no_of_openings,
-    qualificationRequirements: qualifications_req,
-    jobDescription: job_description,
-    jobLink: link,
-    deadlineDate: Deadline,
+    title,
+    no_of_openings,
+    qualifications_req,
+    job_description,
+    link,
+    Deadline,
     responsibilities,
     about,
-    jobStatus: job_status,
-    jobType: job_type,
-    postedOn: posted_on,
-    updatedOn: updated_on,
+    job_status,
+    job_type,
+    posted_on,
+    updated_on,
   } = req.body;
 
   try {
