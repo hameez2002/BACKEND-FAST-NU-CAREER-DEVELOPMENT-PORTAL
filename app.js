@@ -22,7 +22,7 @@ const emailRoutes = require("./controllers/emailRoutes");
 const profilePost = require("./Routes/userRoutes/profilePost");
 
 const app = express();
-const port = process.env.PORT;
+const port = process.env.FRONTEND_API;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
@@ -59,7 +59,7 @@ const multer = require("multer");
 const uploadMiddleware = multer({ dest: "uploads/" });
 const fs = require("fs");
 app.use("/uploads", express.static(__dirname + "/uploads"));
-app.use(cors({ credentials: true, origin: process.env.PORT }));
+app.use(cors({ credentials: true, origin: process.env.FRONTEND_API }));
 app.use(express.json());
 app.use("/uploads", express.static(__dirname + "/uploads"));
 
