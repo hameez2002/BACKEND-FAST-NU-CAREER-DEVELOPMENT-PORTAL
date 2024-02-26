@@ -14,5 +14,5 @@ const con = mysql.createPool({
   // database: "cdp",
 });
 
-console.log(process.env.DB_HOST);
-// module.exports = con;
+// console.log(process.env.DB_HOST);
+module.exports = con;
