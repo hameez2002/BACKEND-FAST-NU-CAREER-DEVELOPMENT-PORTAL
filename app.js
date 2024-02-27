@@ -28,18 +28,18 @@ app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
 app.use(bodyParser.json());
 
-app.post("/jobs", verifyToken, jobsPost);
-app.get("/jobs", verifyToken, jobsGet);
-app.delete("/jobs/:id", verifyToken, jobsDelete);
-app.put("/jobs/:id", verifyToken, jobsEdit);
-app.patch("/jobs/:id", verifyToken, partialJobsEdit);
+// app.post("/jobs", verifyToken, jobsPost);
+// app.get("/jobs", verifyToken, jobsGet);
+// app.delete("/jobs/:id", verifyToken, jobsDelete);
+// app.put("/jobs/:id", verifyToken, jobsEdit);
+// app.patch("/jobs/:id", verifyToken, partialJobsEdit);
 
 //job apis
-// app.post("/jobs", jobsPost);
-// app.get("/jobs", jobsGet);
-// app.delete("/jobs/:id", jobsDelete);
-// app.put("/jobs/:job_id", jobsEdit);
-// app.patch("/jobs/:job_id", partialJobsEdit);
+app.post("/jobs", jobsPost);
+app.get("/jobs", jobsGet);
+app.delete("/jobs/:id", jobsDelete);
+app.put("/jobs/:job_id", jobsEdit);
+app.patch("/jobs/:job_id", partialJobsEdit);
 
 //login apis
 app.post("/register", registerUser);
