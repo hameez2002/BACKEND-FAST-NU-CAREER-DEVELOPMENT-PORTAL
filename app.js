@@ -22,10 +22,10 @@ const emailRoutes = require("./controllers/emailRoutes");
 const profilePost = require("./Routes/userRoutes/profilePost");
 
 const app = express();
-const port = process.env.FRONTEND_API;
+const port = process.env.PORT;
+app.use(cors({ credentials: true, origin: process.env.FRONTEND_API }));
 
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(cors());
 app.use(bodyParser.json());
 
 // app.post("/jobs", verifyToken, jobsPost);
@@ -59,21 +59,16 @@ const multer = require("multer");
 const uploadMiddleware = multer({ dest: "uploads/" });
 const fs = require("fs");
 app.use("/uploads", express.static(__dirname + "/uploads"));
-app.use(cors({ credentials: true, origin: process.env.FRONTEND_API }));
 app.use(express.json());
-app.use("/uploads", express.static(__dirname + "/uploads"));
 
 mongoose.set("strictQuery", false);
 // mongoose.connect(
 //   // "mongodb://hameezahmed23:nMbGO9kRfXZ1xKje@main-shard-00-00-03xkr.mongodb.net:27017,main-shard-00-01-03xkr.mongodb.net:27017,main-shard-00-02-03xkr.mongodb.net:27017/main?ssl=true&replicaSet=Main-shard-0&authSource=admin&retryWrites=true"
-//   "mongodb://hameezahmed23:hameez12@cluster0.zrq5jo8.mongodb.net/?retryWrites=true&w=majority"
+//   "mongodb+srv://hameezahmed23:nMbGO9kRfXZ1xKje@cluster0.zrq5jo8.mongodb.net/?retryWrites=true&w=majority"
 // );
 mongoose.connect(process.env.MONGODB_CONNECT_URI);
 // console.log(process.env.MONGODB_CONNECT_URI);
-app.post(
-  "/newsfeed/createPost",
-  uploadMiddleware.single("file"),
-  async (req, res) => {
+app.post("/newsfeed/createPost", uploadMiddleware.single("file"), async (req, res) => {
     console.log("Hellopost");
     const { originalname, path } = req.file;
     const parts = originalname.split(".");
@@ -91,29 +86,65 @@ app.post(
     res.json(postDoc);
   }
 );
+ 
+// app.put("/newsfeed/post", uploadMiddleware.single("file"), async (req, res) => {
+//   console.log("helloput");
+//   let newPath = null;
+//   if (req.file) {
+//     const { originalname, path } = req.file;
+//     const parts = originalname.split(".");
+//     const ext = parts[parts.length - 1]; 
+//     newPath = path + "." + ext;
+//     fs.renameSync(path, newPath);
+//   }
 
-app.put("/newsfeed/post", uploadMiddleware.single("file"), async (req, res) => {
+//   const { id, title, summary, content } = req.body;
+//   const postDoc = await Post.findById(id);
+//   await postDoc.update({
+//     title,
+//     summary,
+//     content,
+//     cover: newPath ? newPath : postDoc.cover,
+//   });
+
+//   res.json(postDoc);  
+// });
+
+//app.js put api call
+app.put("/newsfeed/post/:id", uploadMiddleware.single("file"), async (req, res) => {
   console.log("helloput");
   let newPath = null;
   if (req.file) {
     const { originalname, path } = req.file;
     const parts = originalname.split(".");
-    const ext = parts[parts.length - 1];
+    const ext = parts[parts.length - 1]; 
     newPath = path + "." + ext;
     fs.renameSync(path, newPath);
   }
 
-  const { id, title, summary, content } = req.body;
-  const postDoc = await Post.findById(id);
-  await postDoc.update({
-    title,
-    summary,
-    content,
-    cover: newPath ? newPath : postDoc.cover,
-  });
+  const { id } = req.params; // Extract id from request parameters
+  const { title, summary, content } = req.body;
+  console.log(id + ' ' + title + ' ' + summary + ' ' + content);
+  try {
+    // Assuming cover image is received as part of the request body
+    const { cover } = req.file ? req.file : {}; // Get cover image path or undefined
+    const updatedPost = await Post.findByIdAndUpdate(id, {
+      title,
+      summary,
+      content,
+      cover: cover ? newPath : undefined, // Update cover path if cover image is provided
+    }, { new: true });
 
-  res.json(postDoc);
+    res.json(updatedPost);
+  } catch (error) {
+    console.error("Error updating post:", error);
+    res.status(500).json({ error: "Internal Server Error" });
+  }
 });
+
+
+
+
 
 app.delete("/newsfeed/delete/:id", async (req, res) => {
   const { id } = req.params;
@@ -148,13 +179,13 @@ app.delete("/newsfeed/delete/:id", async (req, res) => {
 
 app.get("/newsfeed/post", async (req, res) => {
   console.log("hello2");
+  // console.log(res);
   res.json(await Post.find().sort({ createdAt: -1 }).limit(20)); //.populate('author', ['username'])
 });
 
-app.get("/newsfeed/post/:id", async (req, res) => {
+app.get("/newsfeed/post/:id", async (req, res) => { 
   console.log("hello1");
   const { id } = req.params;
-
   const postDoc = await Post.findById(id); //.populate('author', ['username']);
   res.json(postDoc);
 });
