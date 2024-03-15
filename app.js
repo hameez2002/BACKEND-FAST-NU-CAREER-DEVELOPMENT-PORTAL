@@ -270,6 +270,7 @@ mongoose.connect(process.env.MONGODB_CONNECT_URI);
 const Post = require("./api/models/Post");
 
 // Route for creating a new post
+// Route for creating a new post
 app.post("/newsfeed/createPost", upload.single("file"), async (req, res) => {
   try {
     console.log("Entered Create Post");
@@ -281,9 +282,9 @@ app.post("/newsfeed/createPost", upload.single("file"), async (req, res) => {
     console.log(file.originalname);
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
     
-    // Get a readable stream from the file data
-    const stream = file.createReadStream();
-    
+    // Create a readable stream from the file buffer
+    const stream = Readable.from(file.buffer);
+    console.log(stream);
     // Upload the stream to Azure Blob Storage
     await blockBlobClient.uploadStream(stream);
 
