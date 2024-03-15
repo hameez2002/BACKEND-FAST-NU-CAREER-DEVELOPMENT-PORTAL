@@ -202,7 +202,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const verifyToken = require("./Middleware/verifyToken.js");
-const { BlobServiceClient } = require("@azure/storage-blob"); // Import Azure Blob Storage client
+const { BlobServiceClient, generateBlobSASQueryParameters, BlobSASPermissions } = require("@azure/storage-blob");
 require("dotenv").config();
 
 //jobs routes
@@ -277,29 +277,32 @@ const { Readable } = require('stream');
 // Route for creating a new post
 app.post("/newsfeed/createPost", upload.single("file"), async (req, res) => {
   try {
-    console.log("Entered Create Post");
     const { title, summary, content } = req.body;
     const file = req.file;
 
     // Upload file to Azure Blob Storage
     const blobName = `${Date.now()}-${file.originalname}`;
-    console.log(file.originalname);
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-    
-    // Create a readable stream from the file buffer
-    const stream = Readable.from(file.buffer);
-    console.log(stream);
-    
-    // Upload the stream to Azure Blob Storage
-    await blockBlobClient.uploadStream(stream);
-    console.log(blockBlobClient.url);
-    
-    // Save post with file URL
+    await blockBlobClient.uploadData(file.buffer);
+
+    // Generate SAS token for the uploaded blob
+    const blobSAS = generateBlobSASQueryParameters({
+      containerName,
+      blobName,
+      permissions: BlobSASPermissions.parse("r"), // Read permission
+      startsOn: new Date(),
+      expiresOn: new Date(new Date().valueOf() + 90 * 24 * 3600 * 1000), // 3 months from now
+    }, blobServiceClient.credential);
+
+    // Append SAS token to the blob URL
+    const blobUrlWithSAS = `${blockBlobClient.url}?${blobSAS.toString()}`;
+
+    // Save post with the blob URL including the SAS token
     const postDoc = await Post.create({
       title,
       summary,
       content,
-      cover: blockBlobClient.url,
+      cover: blobUrlWithSAS,
     });
 
     res.json(postDoc);
