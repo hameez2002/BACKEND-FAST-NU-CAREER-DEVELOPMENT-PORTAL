@@ -204,7 +204,7 @@ const cors = require("cors");
 const verifyToken = require("./Middleware/verifyToken.js");
 const { BlobServiceClient, generateBlobSASQueryParameters, BlobSASPermissions } = require("@azure/storage-blob");
 require("dotenv").config();
-const imageType = require('image-type');
+// const imageType = require('image-type');
 
 //jobs routes
 const jobsPost = require("./Routes/jobsPost.js");
@@ -235,6 +235,13 @@ app.use(bodyParser.json());
 // app.delete("/jobs/:id", verifyToken, jobsDelete);
 // app.put("/jobs/:id", verifyToken, jobsEdit);
 // app.patch("/jobs/:id", verifyToken, partialJobsEdit);
+
+let imageType;
+import('image-type').then(module => {
+  imageType = module;
+}).catch(err => {
+  console.error('Error importing image-type:', err);
+});
 
 //job apis
 app.post("/jobs", jobsPost);
