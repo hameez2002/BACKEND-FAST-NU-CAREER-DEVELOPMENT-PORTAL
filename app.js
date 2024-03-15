@@ -324,7 +324,7 @@ app.post("/newsfeed/createPost", upload.single("file"), async (req, res) => {
 
 // Route for updating an existing post
 // updatepost put api
-app.put("/newsfeed/post/:id", upload.single("file"), async (req, res) => {
+app.put("/newsfeed/post/:id", upload.single("cover"), async (req, res) => {
   try {
     const { id } = req.params;
     const { title, summary, content } = req.body;
@@ -332,11 +332,10 @@ app.put("/newsfeed/post/:id", upload.single("file"), async (req, res) => {
 
     let coverUrl;
     if (file) {
-      // Detect image type
+      // Handle cover image upload
       const imageMimeType = imageType(file.buffer);
       const contentType = imageMimeType ? `image/${imageMimeType.ext}` : 'application/octet-stream';
 
-      // Upload file to Azure Blob Storage
       const blobName = `${Date.now()}-${file.originalname}`;
       const blockBlobClient = containerClient.getBlockBlobClient(blobName);
       const stream = Readable.from(file.buffer);
