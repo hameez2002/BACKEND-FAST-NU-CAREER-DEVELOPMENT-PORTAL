@@ -280,12 +280,14 @@ app.post("/newsfeed/createPost", upload.single("file"), async (req, res) => {
     const blobName = `${Date.now()}-${file.originalname}`;
     console.log(file.originalname);
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-    const stream = file.buffer;
-    console.log(stream);
+    
+    // Get a readable stream from the file data
+    const stream = file.createReadStream();
+    
+    // Upload the stream to Azure Blob Storage
     await blockBlobClient.uploadStream(stream);
 
     // Save post with file URL
-
     const postDoc = await Post.create({
       title,
       summary,
@@ -299,6 +301,7 @@ app.post("/newsfeed/createPost", upload.single("file"), async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 // Route for updating an existing post
 app.put("/newsfeed/post/:id", upload.single("file"), async (req, res) => {
