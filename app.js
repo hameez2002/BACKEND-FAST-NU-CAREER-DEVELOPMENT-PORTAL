@@ -199,6 +199,7 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const verifyToken = require("./Middleware/verifyToken.js");
+const { BlobServiceClient } = require("@azure/storage-blob"); // Import Azure Blob Storage client
 require("dotenv").config();
 
 //jobs routes
@@ -225,16 +226,6 @@ app.use(cors({ credentials: true, origin: process.env.FRONTEND_API }));
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(bodyParser.json());
 
-
-// Azure Blob Storage setup
-const { BlobServiceClient } = require("@azure/storage-blob");
-const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
-const containerName = process.env.AZURE_STORAGE_CONTAINER_NAME;
-
-const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
-const containerClient = blobServiceClient.getContainerClient(containerName);
-
-
 // app.post("/jobs", verifyToken, jobsPost);
 // app.get("/jobs", verifyToken, jobsGet);
 // app.delete("/jobs/:id", verifyToken, jobsDelete);
@@ -258,75 +249,89 @@ app.use("/email", emailRoutes);
 //user profile apis
 app.post("/profile", profilePost);
 
+
+
+const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
+const containerName = process.env.AZURE_STORAGE_CONTAINER_NAME;
+const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
+const containerClient = blobServiceClient.getContainerClient(containerName);
+
+// Multer setup
+const multer = require("multer");
+const upload = multer();
+
+// MongoDB setup
 const mongoose = require("mongoose");
+mongoose.set("strictQuery", false);
+mongoose.connect(process.env.MONGODB_CONNECT_URI);
+
+// Define schema for Post model
 const Post = require("./api/models/Post");
 
-// const multer = require("multer");
-// const uploadMiddleware = multer({ dest: "uploads/" });
-// const fs = require("fs");
-// app.use("/uploads", express.static(__dirname + "/uploads"));
-// app.use(express.json());
-
-mongoose.set("strictQuery", false);
-// mongoose.connect(
-//   // "mongodb://hameezahmed23:nMbGO9kRfXZ1xKje@main-shard-00-00-03xkr.mongodb.net:27017,main-shard-00-01-03xkr.mongodb.net:27017,main-shard-00-02-03xkr.mongodb.net:27017/main?ssl=true&replicaSet=Main-shard-0&authSource=admin&retryWrites=true"
-//   "mongodb+srv://hameezahmed23:nMbGO9kRfXZ1xKje@cluster0.zrq5jo8.mongodb.net/?retryWrites=true&w=majority"
-// );
-mongoose.connect(process.env.MONGODB_CONNECT_URI);
-// console.log(process.env.MONGODB_CONNECT_URI);
-
-app.post("/newsfeed/createPost", async (req, res) => {
+// Route for creating a new post
+app.post("/newsfeed/createPost", upload.single("file"), async (req, res) => {
   try {
-      const { title, summary, content } = req.body;
-      const file = req.file;
+    const { title, summary, content } = req.body;
+    const file = req.file;
 
-      // Upload file to Azure Blob Storage
-      const blobName = `${Date.now()}-${file.originalname}`;
-      const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-      const stream = file.createReadStream();
-      await blockBlobClient.uploadStream(stream);
+    // Upload file to Azure Blob Storage
+    const blobName = `${Date.now()}-${file.originalname}`;
+    const blockBlobClient = containerClient.getBlockBlobClient(blobName);
+    const stream = file.buffer;
+    await blockBlobClient.uploadStream(stream);
 
-      // Save post with file URL
-      const postDoc = await Post.create({
-          title,
-          summary,
-          content,
-          cover: blockBlobClient.url,
-      });
+    // Save post with file URL
+    const postDoc = await Post.create({
+      title,
+      summary,
+      content,
+      cover: blockBlobClient.url,
+    });
 
-      res.json(postDoc);
+    res.json(postDoc);
   } catch (error) {
-      console.error("Error creating post:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error creating post:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
 
-app.put("/newsfeed/post/:id", async (req, res) => {
+// Route for updating an existing post
+app.put("/newsfeed/post/:id", upload.single("file"), async (req, res) => {
   try {
-      const { id } = req.params;
-      const { title, summary, content } = req.body;
-      const file = req.file;
+    const { id } = req.params;
+    const { title, summary, content } = req.body;
+    const file = req.file;
 
+    let coverUrl;
+    if (file) {
       // Upload file to Azure Blob Storage
       const blobName = `${Date.now()}-${file.originalname}`;
       const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-      const stream = file.createReadStream();
+      const stream = file.buffer;
       await blockBlobClient.uploadStream(stream);
+      coverUrl = blockBlobClient.url;
+    }
 
-      // Update post with new file URL
-      const updatedPost = await Post.findByIdAndUpdate(id, {
-          title,
-          summary,
-          content,
-          cover: blockBlobClient.url,
-      }, { new: true });
+    // Update post with new data
+    const updatedPost = await Post.findByIdAndUpdate(
+      id,
+      {
+        title,
+        summary,
+        content,
+        ...(coverUrl && { cover: coverUrl }), // Update cover URL if cover image is provided
+      },
+      { new: true }
+    );
 
-      res.json(updatedPost);
+    res.json(updatedPost);
   } catch (error) {
-      console.error("Error updating post:", error);
-      res.status(500).json({ error: "Internal Server Error" });
+    console.error("Error updating post:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
+
 
 
 app.delete("/newsfeed/delete/:id", async (req, res) => {
@@ -374,3 +379,5 @@ app.get("/newsfeed/post/:id", async (req, res) => {
 });
 
 app.listen(port, () => console.log(`server running on ${port}`));
+
+
