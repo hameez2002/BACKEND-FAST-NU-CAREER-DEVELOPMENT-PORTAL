@@ -288,10 +288,12 @@ app.post("/newsfeed/createPost", upload.single("file"), async (req, res) => {
     
     // Create a readable stream from the file buffer
     const stream = Readable.from(file.buffer);
+    console.log(stream);
     
     // Upload the stream to Azure Blob Storage
     await blockBlobClient.uploadStream(stream);
-
+    console.log(blockBlobClient.url);
+    
     // Save post with file URL
     const postDoc = await Post.create({
       title,
