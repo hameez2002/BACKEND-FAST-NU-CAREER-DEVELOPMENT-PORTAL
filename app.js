@@ -279,9 +279,11 @@ app.post("/newsfeed/createPost", upload.single("file"), async (req, res) => {
     const blobName = `${Date.now()}-${file.originalname}`;
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
     const stream = file.buffer;
+    console.log(stream);
     await blockBlobClient.uploadStream(stream);
 
     // Save post with file URL
+
     const postDoc = await Post.create({
       title,
       summary,
