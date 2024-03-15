@@ -272,11 +272,13 @@ const Post = require("./api/models/Post");
 // Route for creating a new post
 app.post("/newsfeed/createPost", upload.single("file"), async (req, res) => {
   try {
+    console.log("Entered Create Post");
     const { title, summary, content } = req.body;
     const file = req.file;
 
     // Upload file to Azure Blob Storage
     const blobName = `${Date.now()}-${file.originalname}`;
+    console.log(file.originalname);
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
     const stream = file.buffer;
     console.log(stream);
