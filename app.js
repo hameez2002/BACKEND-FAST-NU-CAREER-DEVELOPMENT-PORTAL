@@ -68,6 +68,7 @@
 // // );
 // mongoose.connect(process.env.MONGODB_CONNECT_URI);
 // // console.log(process.env.MONGODB_CONNECT_URI);
+
 // app.post("/newsfeed/createPost", uploadMiddleware.single("file"), async (req, res) => {
 //     console.log("Hellopost");
 //     const { originalname, path } = req.file;
@@ -251,7 +252,7 @@ app.post("/profile", profilePost);
 
 
 
-const connectionString = process.env.AZURE_STORAGE_CONNECTION_STRING;
+const connectionString = "DefaultEndpointsProtocol=https;AccountName=cdp3;AccountKey=hzfOj//gM6C8mvt5xh0WkGuqYOp36lFLrR3TGiua/TxxdqMBNFxKfJjO9PVkoaUI9H4wV9duSOKF+AStYfNyKA==;EndpointSuffix=core.windows.net";
 const containerName = process.env.AZURE_STORAGE_CONTAINER_NAME;
 const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
 const containerClient = blobServiceClient.getContainerClient(containerName);
