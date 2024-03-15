@@ -323,6 +323,7 @@ app.post("/newsfeed/createPost", upload.single("file"), async (req, res) => {
 
 
 // Route for updating an existing post
+// updatepost put api
 app.put("/newsfeed/post/:id", upload.single("file"), async (req, res) => {
   try {
     const { id } = req.params;
@@ -331,25 +332,27 @@ app.put("/newsfeed/post/:id", upload.single("file"), async (req, res) => {
 
     let coverUrl;
     if (file) {
+      // Detect image type
+      const imageMimeType = imageType(file.buffer);
+      const contentType = imageMimeType ? `image/${imageMimeType.ext}` : 'application/octet-stream';
+
       // Upload file to Azure Blob Storage
       const blobName = `${Date.now()}-${file.originalname}`;
       const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-      const stream = file.buffer;
-      await blockBlobClient.uploadStream(stream);
+      const stream = Readable.from(file.buffer);
+      await blockBlobClient.uploadStream(stream, undefined, undefined, { blobHTTPHeaders: { blobContentType: contentType } });
       coverUrl = blockBlobClient.url;
     }
 
     // Update post with new data
-    const updatedPost = await Post.findByIdAndUpdate(
-      id,
-      {
-        title,
-        summary,
-        content,
-        ...(coverUrl && { cover: coverUrl }), // Update cover URL if cover image is provided
-      },
-      { new: true }
-    );
+    const updatedFields = {
+      title,
+      summary,
+      content,
+      ...(coverUrl && { cover: coverUrl }), // Update cover URL if cover image is provided
+    };
+
+    const updatedPost = await Post.findByIdAndUpdate(id, updatedFields, { new: true });
 
     res.json(updatedPost);
   } catch (error) {
@@ -357,6 +360,7 @@ app.put("/newsfeed/post/:id", upload.single("file"), async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 app.delete("/newsfeed/delete/:id", async (req, res) => {
   const { id } = req.params;
