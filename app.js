@@ -204,6 +204,7 @@ const cors = require("cors");
 const verifyToken = require("./Middleware/verifyToken.js");
 const { BlobServiceClient, generateBlobSASQueryParameters, BlobSASPermissions } = require("@azure/storage-blob");
 require("dotenv").config();
+const imageType = require('image-type');
 
 //jobs routes
 const jobsPost = require("./Routes/jobsPost.js");
@@ -281,6 +282,10 @@ app.post("/newsfeed/createPost", upload.single("file"), async (req, res) => {
     const { title, summary, content } = req.body;
     const file = req.file;
 
+    // Detect image type
+    const imageMimeType = imageType(file.buffer);
+    const contentType = imageMimeType ? `image/${imageMimeType.ext}` : 'application/octet-stream';
+
     // Upload file to Azure Blob Storage
     const blobName = `${Date.now()}-${file.originalname}`;
     console.log(file.originalname);
@@ -291,7 +296,7 @@ app.post("/newsfeed/createPost", upload.single("file"), async (req, res) => {
     console.log(stream);
     
     // Upload the stream to Azure Blob Storage
-    await blockBlobClient.uploadStream(stream);
+    await blockBlobClient.uploadStream(stream, undefined, undefined, { blobHTTPHeaders: { blobContentType: contentType } });
     console.log(blockBlobClient.url);
     
     // Save post with file URL
@@ -308,6 +313,7 @@ app.post("/newsfeed/createPost", upload.single("file"), async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
+
 
 // Route for updating an existing post
 app.put("/newsfeed/post/:id", upload.single("file"), async (req, res) => {
