@@ -277,6 +277,7 @@ const { Readable } = require('stream');
 // Route for creating a new post
 app.post("/newsfeed/createPost", upload.single("file"), async (req, res) => {
   try {
+    console.log("entered create post");
     const { title, summary, content } = req.body;
     const file = req.file;
 
@@ -296,7 +297,7 @@ app.post("/newsfeed/createPost", upload.single("file"), async (req, res) => {
 
     // Append SAS token to the blob URL
     const blobUrlWithSAS = `${blockBlobClient.url}?${blobSAS.toString()}`;
-
+    console.log(blobUrlWithSAS);
     // Save post with the blob URL including the SAS token
     const postDoc = await Post.create({
       title,
