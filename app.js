@@ -196,6 +196,8 @@
 
 
 
+//app.js
+
 const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
@@ -269,7 +271,9 @@ mongoose.connect(process.env.MONGODB_CONNECT_URI);
 // Define schema for Post model
 const Post = require("./api/models/Post");
 
-// Route for creating a new post
+// Import Readable class from stream module
+const { Readable } = require('stream');
+
 // Route for creating a new post
 app.post("/newsfeed/createPost", upload.single("file"), async (req, res) => {
   try {
@@ -284,7 +288,7 @@ app.post("/newsfeed/createPost", upload.single("file"), async (req, res) => {
     
     // Create a readable stream from the file buffer
     const stream = Readable.from(file.buffer);
-    console.log(stream);
+    
     // Upload the stream to Azure Blob Storage
     await blockBlobClient.uploadStream(stream);
 
@@ -302,7 +306,6 @@ app.post("/newsfeed/createPost", upload.single("file"), async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 // Route for updating an existing post
 app.put("/newsfeed/post/:id", upload.single("file"), async (req, res) => {
@@ -339,9 +342,6 @@ app.put("/newsfeed/post/:id", upload.single("file"), async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
-
-
 
 app.delete("/newsfeed/delete/:id", async (req, res) => {
   const { id } = req.params;
@@ -388,5 +388,3 @@ app.get("/newsfeed/post/:id", async (req, res) => {
 });
 
 app.listen(port, () => console.log(`server running on ${port}`));
-
-
