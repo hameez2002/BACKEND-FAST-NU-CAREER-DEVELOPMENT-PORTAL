@@ -238,7 +238,7 @@ app.use(bodyParser.json());
 
 let imageType;
 import('image-type').then(module => {
-  imageType = module;
+  imageType = module.default;
 }).catch(err => {
   console.error('Error importing image-type:', err);
 });
