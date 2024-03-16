@@ -1,6 +1,8 @@
 //profilePost.js
 const knex = require("../../knexFile.js");
 
+console.log("Entered Profile");
+
 module.exports = async (req, res) => {
   try {
     const {
