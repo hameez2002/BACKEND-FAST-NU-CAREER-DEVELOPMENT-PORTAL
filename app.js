@@ -279,7 +279,7 @@ const multer = require("multer");
 // const fs = require("fs");
 // const singleJobGet = require("./Routes/singleJobGet.js");
 // app.use("/uploads", express.static(__dirname + "/uploads"));
-// app.use(cors({ credentials: true, origin: process.env.FRONTEND_API }));
+app.use(cors({ credentials: true, origin: process.env.FRONTEND_API }));
 
 // app.use(cors({
 //   origin: 'http://localhost:3000', // Allow requests from this origin
