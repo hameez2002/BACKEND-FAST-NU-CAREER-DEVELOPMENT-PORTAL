@@ -10,6 +10,7 @@ const jobsGet = require("./Routes/jobsGet.js");
 const jobsDelete = require("./Routes/jobsDelete.js");
 const jobsEdit = require("./Routes/jobsEdit.js");
 const partialJobsEdit = require("./Routes/partialJobsEdit.js");
+const getJobSingle = require("./Routes/singleJobGet.js");
 
 //login
 const registerUser = require("./Routes/registerUser.js");
@@ -20,9 +21,11 @@ const emailRoutes = require("./controllers/emailRoutes");
 
 //user routes
 const profilePost = require("./Routes/userRoutes/profilePost");
+const getProfile = require("./Routes/userRoutes/getProfile");
+const profileGetAll = require("./Routes/userRoutes/profileGetAll.js");
 
 const app = express();
-const port = process.env.FRONTEND_API;
+const port = process.env.PORT;
 
 app.use(bodyParser.urlencoded({ extended: false }));
 app.use(cors());
@@ -40,6 +43,7 @@ app.get("/jobs", jobsGet);
 app.delete("/jobs/:id", jobsDelete);
 app.put("/jobs/:job_id", jobsEdit);
 app.patch("/jobs/:job_id", partialJobsEdit);
+app.get("/jobs/:id", getJobSingle);
 
 //login apis
 app.post("/register", registerUser);
@@ -50,6 +54,8 @@ app.use("/email", emailRoutes);
 
 //user profile apis
 app.post("/profile", profilePost);
+app.get("/profile/:user_id", getProfile);
+app.get("/profile", profileGetAll);
 
 const mongoose = require("mongoose");
 
@@ -58,8 +64,14 @@ const Post = require("./api/models/Post");
 const multer = require("multer");
 const uploadMiddleware = multer({ dest: "uploads/" });
 const fs = require("fs");
+const singleJobGet = require("./Routes/singleJobGet.js");
 app.use("/uploads", express.static(__dirname + "/uploads"));
-app.use(cors({ credentials: true, origin: process.env.FRONTEND_API }));
+app.use(cors({ credentials: true, origin: 'http://localhost:3000' }));
+// app.use(cors({
+//   origin: 'http://localhost:3000', // Allow requests from this origin
+//   methods: 'GET,POST,PUT,DELETE',
+//   allowedHeaders: 'Content-Type,Authorization',
+// }));
 app.use(express.json());
 app.use("/uploads", express.static(__dirname + "/uploads"));
 

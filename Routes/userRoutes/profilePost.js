@@ -1,91 +1,97 @@
-// userProfilePost.js
-const con = require("../../db.js");
+//profilePost.js
+const knex = require("../../knexFile.js");
 
-module.exports = (req, res) => {
-  console.log("Received request body:", req.body);
-
-  const {
-    firstName,
-    lastName,
-    contact,
-    discipline,
-    gradYear,
-    cgpa,
-    tagline,
-    personalStatement,
-    certificates,
-    experiences,
-  } = req.body;
-
-  // Insert into student_profile table
-  const studentProfileSql =
-    "INSERT INTO student_profile (user_id, fname, lname, contact, discipline, year_of_graduation, cgpa, tagline, personal_statement) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
-  con.query(
-    studentProfileSql,
-    [
-      req.user.id,
-      firstName,
-      lastName,
-      contact,
+module.exports = async (req, res) => {
+  try {
+    const {
+      user_id,
+      fname,
+      lname,
+      student_profile_pic,
+      year_of_graduation,
       discipline,
-      gradYear,
-      cgpa,
+      contact,
       tagline,
-      personalStatement,
-    ],
-    (err, studentProfileResult) => {
-      if (err) {
-        console.error("Error inserting into student_profile table:", err);
-        return res.status(500).send("Internal Server Error");
+      cgpa,
+      personal_statement,
+      certificates,
+      experiences,
+      profiles,
+    } = req.body;
+
+    // Check if user_id is provided
+    if (!user_id) {
+      return res.status(400).json({ error: "User ID is required" });
+    }
+
+    // Decode base64 profile picture string
+    // const buffer = Buffer.from(profilePicture, "base64");
+
+    // Start transaction
+    await knex.transaction(async (trx) => {
+      // Update student_profile table
+      await trx("student_profile")
+        .where({ user_id })
+        .update({
+          fname,
+          lname,
+          student_profile_pic,
+          year_of_graduation,
+          discipline,
+          contact,
+          tagline,
+          cgpa,
+          personal_statement,
+          // student_profile_pic: buffer,
+        });
+
+      // Handle certificates
+      if (certificates && certificates.length > 0) {
+        // Delete existing certificates
+        await trx("certificates").where({ user_id }).del();
+
+        // Insert new certificates
+        await trx("certificates").insert(
+          certificates.map((certificate) => ({
+            user_id,
+            certificate,
+          }))
+        );
       }
 
-      console.log("Inserted into student_profile table:", studentProfileResult);
+      // Handle experiences
+      if (experiences && experiences.length > 0) {
+        // Delete existing experiences
+        await trx("experiences").where({ user_id }).del();
 
-      // Insert into certificates table
-      const certificatesSql =
-        "INSERT INTO certificates (user_id, certificate) VALUES ?";
-      const certificatesValues = certificates.map((certificate) => [
-        req.user.id,
-        certificate,
-      ]);
-      con.query(
-        certificatesSql,
-        [certificatesValues],
-        (err, certificatesResult) => {
-          if (err) {
-            console.error("Error inserting into certificates table:", err);
-            return res.status(500).send("Internal Server Error");
-          }
-
-          console.log("Inserted into certificates table:", certificatesResult);
-
-          // Insert into experiences table
-          const experiencesSql =
-            "INSERT INTO experiences (user_id, experience) VALUES ?";
-          const experiencesValues = experiences.map((experience) => [
-            req.user.id,
+        // Insert new experiences
+        await trx("experiences").insert(
+          experiences.map((experience) => ({
+            user_id,
             experience,
-          ]);
-          con.query(
-            experiencesSql,
-            [experiencesValues],
-            (err, experiencesResult) => {
-              if (err) {
-                console.error("Error inserting into experiences table:", err);
-                return res.status(500).send("Internal Server Error");
-              }
+          }))
+        );
+      }
 
-              console.log(
-                "Inserted into experiences table:",
-                experiencesResult
-              );
+      // Insert into profiles table
+      if (profiles && profiles.length > 0) {
+        await trx("profiles").insert(
+          profiles.map((profile) => ({
+            user_id,
+            ...profile,
+          }))
+        );
+      }
+    });
 
-              // Send response indicating successful insertion
-              res.status(200).send("Profile data saved successfully");
-            }
-          );
-        }
-      );
-    }
-  );
+    console.log("Profile data updated successfully");
+    return res.status(200).json({ message: "Profile data updated successfully" });
+  } catch (error) {
+    console.error("Error updating profile data:", error);
+    return res
+      .status(500)
+      .json({ error: "Failed to update profile data", details: error.message });
+  }
 };
+
+
