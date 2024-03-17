@@ -3,7 +3,7 @@ const knex = require("../../knexFile.js");
 module.exports = async (req, res) => {
   try {
     const { user_id } = req.params;
-
+    console.log(`fetching data of ${user_id} profile`);
     // Check if user_id is provided and validate it if necessary
     if (!user_id) {
       return res.status(400).json({ error: "User ID is required" });
