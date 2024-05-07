@@ -22,9 +22,9 @@ module.exports = async (req, res) => {
     } = req.body;
 
     // Check if user_id is provided
-    if (!user_id) {
-      return res.status(400).json({ error: "User ID is required" });
-    }
+    // if (!user_id) {
+    //   return res.status(400).json({ error: "User ID is required" });
+    // }
 
     // Decode base64 profile picture string
     // const buffer = Buffer.from(profilePicture, "base64");
