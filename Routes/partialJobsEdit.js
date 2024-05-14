@@ -61,14 +61,14 @@ module.exports = async (req, res) => {
   // const { jobTitle, jobType, jobDescription, deadlineDate, jobLink } = req.body;
   const {
     title,
-    no_of_openings,
+    // no_of_openings,
     qualifications_req,
     job_description,
     link,
-    Deadline,
-    responsibilities,
-    about,
-    job_status,
+    // Deadline,
+    // responsibilities,
+    // about,
+    // job_status,
     job_type,
     posted_on,
     updated_on,
@@ -88,20 +88,21 @@ module.exports = async (req, res) => {
         const updatedJob = {
           title: title || job.title,
           job_type: job_type || job.job_type,
-          no_of_openings: no_of_openings || job.no_of_openings,
+          // no_of_openings: no_of_openings || job.no_of_openings,
           qualifications_req: qualifications_req || job.qualifications_req,
           job_description: job_description || job.job_description,
           link: link || job.link,
-          Deadline: Deadline || job.Deadline,
-          responsibilities: responsibilities || job.responsibilities,
-          about: about || job.about,
-          job_status: job_status || job.job_status,
+          // Deadline: Deadline || job.Deadline,
+          // responsibilities: responsibilities || job.responsibilities,
+          // about: about || job.about,
+          // job_status: job_status || job.job_status,
           posted_on: posted_on || job.posted_on,
           updated_on: updated_on || job.updated_on,
         };
 
         const sql =
-        "UPDATE cso_jobs SET title = ?, job_type = ?, no_of_openings = ?, qualifications_req = ?, job_description = ?, link = ?, Deadline = ?, responsibilities = ?, about = ?, job_status = ?, posted_on = ?, updated_on = ? WHERE job_id = ?";
+        "UPDATE cso_jobs SET title = ?, job_type = ?, qualifications_req = ?, job_description = ?, link = ?, posted_on = ?, updated_on = ? WHERE job_id = ?";
+        // "UPDATE cso_jobs SET title = ?, job_type = ?, no_of_openings = ?, qualifications_req = ?, job_description = ?, link = ?, Deadline = ?, responsibilities = ?, about = ?, job_status = ?, posted_on = ?, updated_on = ? WHERE job_id = ?";
 
         con.query(
           sql,
@@ -110,12 +111,12 @@ module.exports = async (req, res) => {
             updatedJob.job_type,
             updatedJob.job_description,
             updatedJob.qualifications_req,
-            updatedJob.job_description,
+            // updatedJob.job_description,
             updatedJob.link,
-            updatedJob.Deadline,
-            updatedJob.responsibilities,
-            updatedJob.about,
-            updatedJob.job_status,
+            // updatedJob.Deadline,
+            // updatedJob.responsibilities,
+            // updatedJob.about,
+            // updatedJob.job_status,
             updatedJob.posted_on,
             updatedJob.updated_on,
             job_id,
