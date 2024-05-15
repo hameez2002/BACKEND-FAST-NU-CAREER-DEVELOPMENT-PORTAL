@@ -30,11 +30,11 @@ const getProfile = require("./Routes/userRoutes/getProfile");
 const profileGetAll = require("./Routes/userRoutes/profileGetAll.js");
 
 const app = express();
-app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+app.use(cors({ credentials: true, origin: process.env.FRONTEND_API }));
 const port = process.env.PORT;
 
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: "50mb" })); // Set max payload size limit
 
 //verifyToken routes turned off
 // app.post("/jobs", verifyToken, jobsPost);
@@ -87,7 +87,7 @@ const multer = require("multer");
 // const fs = require("fs");
 // const singleJobGet = require("./Routes/singleJobGet.js");
 // app.use("/uploads", express.static(__dirname + "/uploads"));
-app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
+app.use(cors({ credentials: true, origin: process.env.FRONTEND_API }));
 
 // app.use(cors({
 //   origin: 'http://localhost:3000', // Allow requests from this origin

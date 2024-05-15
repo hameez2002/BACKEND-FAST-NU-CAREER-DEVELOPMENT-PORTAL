@@ -1,5 +1,7 @@
-//profilePost.js
 const knex = require("../../knexFile.js");
+const azure = require("azure-storage");
+const fs = require('fs');
+const blobService = azure.createBlobService("cdp3", "hzfOj//gM6C8mvt5xh0WkGuqYOp36lFLrR3TGiua/TxxdqMBNFxKfJjO9PVkoaUI9H4wV9duSOKF+AStYfNyKA==");
 
 console.log("Entered Profile");
 
@@ -9,7 +11,6 @@ module.exports = async (req, res) => {
       user_id,
       fname,
       lname,
-      student_profile_pic,
       year_of_graduation,
       discipline,
       contact,
@@ -21,38 +22,42 @@ module.exports = async (req, res) => {
       profiles,
     } = req.body;
 
-    // Check if user_id is provided
-    // if (!user_id) {
-    //   return res.status(400).json({ error: "User ID is required" });
-    // }
+    console.log("req files: ", req.files[0]);
+    const profilePic = req.files[0];
+    console.log("profile pic: ", profilePic);
+    const blobName = `profile-pics/${profilePic.originalname}`;
+    const buffer = profilePic.buffer; // Access the buffer directly
+    const containerName = "profilepic";
+    console.log(blobName);
+    
+    await new Promise((resolve, reject) => {
+      blobService.createBlockBlobFromText(containerName, blobName, buffer, (err) => {
+        if (err) reject(err);
+        else resolve();
+      });
+    });
 
-    // Decode base64 profile picture string
-    // const buffer = Buffer.from(profilePicture, "base64");
-
-    // Start transaction
+    const profilePicUrl = `https://cdp3.blob.core.windows.net/profilepic/${blobName}`;
+    
+    // Update database with profile picture URL and other profile data
     await knex.transaction(async (trx) => {
-      // Update student_profile table
       await trx("student_profile")
         .where({ user_id })
         .update({
           fname,
           lname,
-          student_profile_pic,
+          student_profile_pic: profilePicUrl, // Update with profile picture URL
           year_of_graduation,
           discipline,
           contact,
           tagline,
           cgpa,
           personal_statement,
-          // student_profile_pic: buffer,
         });
 
-      // Handle certificates
-      if (certificates && certificates.length > 0) {
-        // Delete existing certificates
+      // Handle certificates if it's an array
+      if (Array.isArray(certificates)) {
         await trx("certificates").where({ user_id }).del();
-
-        // Insert new certificates
         await trx("certificates").insert(
           certificates.map((certificate) => ({
             user_id,
@@ -61,12 +66,9 @@ module.exports = async (req, res) => {
         );
       }
 
-      // Handle experiences
-      if (experiences && experiences.length > 0) {
-        // Delete existing experiences
+      // Handle experiences if it's an array
+      if (Array.isArray(experiences)) {
         await trx("experiences").where({ user_id }).del();
-
-        // Insert new experiences
         await trx("experiences").insert(
           experiences.map((experience) => ({
             user_id,
@@ -75,8 +77,8 @@ module.exports = async (req, res) => {
         );
       }
 
-      // Insert into profiles table
-      if (profiles && profiles.length > 0) {
+      // Insert into profiles table if it's an array
+      if (Array.isArray(profiles)) {
         await trx("profiles").insert(
           profiles.map((profile) => ({
             user_id,
@@ -95,5 +97,3 @@ module.exports = async (req, res) => {
       .json({ error: "Failed to update profile data", details: error.message });
   }
 };
-
-
