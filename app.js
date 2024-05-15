@@ -18,6 +18,8 @@ const partialJobsEdit = require("./Routes/partialJobsEdit.js");
 const getJobSingle = require("./Routes/singleJobGet.js");
 
 //login
+app.use(cors({ credentials: true, origin: process.env.FRONTEND_API }));
+
 const registerUser = require("./Routes/registerUser.js");
 const loginUser = require("./Routes/loginUser.js");
 
