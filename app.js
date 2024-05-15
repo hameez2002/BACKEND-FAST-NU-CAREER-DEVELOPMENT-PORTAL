@@ -18,7 +18,8 @@ const partialJobsEdit = require("./Routes/partialJobsEdit.js");
 const getJobSingle = require("./Routes/singleJobGet.js");
 
 //login
-app.use(cors({ credentials: true, origin: process.env.FRONTEND_API }));
+const allowedOrigins = ['https://main--zesty-creponne-0bcae2.netlify.app'];
+app.use(cors({ credentials: true, origin: allowedOrigins }));
 
 const registerUser = require("./Routes/registerUser.js");
 const loginUser = require("./Routes/loginUser.js");
@@ -32,7 +33,7 @@ const getProfile = require("./Routes/userRoutes/getProfile");
 const profileGetAll = require("./Routes/userRoutes/profileGetAll.js");
 
 const app = express();
-app.use(cors({ credentials: true, origin: process.env.FRONTEND_API }));
+// app.use(cors({ credentials: true, origin: process.env.FRONTEND_API }));
 const port = process.env.PORT;
 
 app.use(bodyParser.urlencoded({ extended: false }));
