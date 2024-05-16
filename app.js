@@ -18,9 +18,6 @@ const partialJobsEdit = require("./Routes/partialJobsEdit.js");
 const getJobSingle = require("./Routes/singleJobGet.js");
 
 //login
-const allowedOrigins = ['https://main--zesty-creponne-0bcae2.netlify.app'];
-app.use(cors({ credentials: true, origin: allowedOrigins }));
-
 const registerUser = require("./Routes/registerUser.js");
 const loginUser = require("./Routes/loginUser.js");
 
@@ -33,7 +30,7 @@ const getProfile = require("./Routes/userRoutes/getProfile");
 const profileGetAll = require("./Routes/userRoutes/profileGetAll.js");
 
 const app = express();
-// app.use(cors({ credentials: true, origin: process.env.FRONTEND_API }));
+app.use(cors({ credentials: true, origin: "https://main--zesty-creponne-0bcae2.netlify.app" }));
 const port = process.env.PORT;
 
 app.use(bodyParser.urlencoded({ extended: false }));
@@ -45,8 +42,6 @@ app.use(bodyParser.json({ limit: "50mb" })); // Set max payload size limit
 // app.delete("/jobs/:id", verifyToken, jobsDelete);
 // app.put("/jobs/:id", verifyToken, jobsEdit);
 // app.patch("/jobs/:id", verifyToken, partialJobsEdit);
-// const allowedOrigins = ['https://main--zesty-creponne-0bcae2.netlify.app'];
-app.use(cors({ credentials: true, origin: process.env.FRONTEND_API }));
 
 let imageType;
 import("image-type")
@@ -92,7 +87,7 @@ const multer = require("multer");
 // const fs = require("fs");
 // const singleJobGet = require("./Routes/singleJobGet.js");
 // app.use("/uploads", express.static(__dirname + "/uploads"));
-app.use(cors({ credentials: true, origin: process.env.FRONTEND_API }));
+app.use(cors({ credentials: true, origin: "https://main--zesty-creponne-0bcae2.netlify.app" }));
 
 // app.use(cors({
 //   origin: 'http://localhost:3000', // Allow requests from this origin
