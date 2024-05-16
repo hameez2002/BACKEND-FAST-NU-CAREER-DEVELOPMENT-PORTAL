@@ -45,8 +45,8 @@ app.use(bodyParser.json({ limit: "50mb" })); // Set max payload size limit
 // app.delete("/jobs/:id", verifyToken, jobsDelete);
 // app.put("/jobs/:id", verifyToken, jobsEdit);
 // app.patch("/jobs/:id", verifyToken, partialJobsEdit);
-const allowedOrigins = ['https://main--zesty-creponne-0bcae2.netlify.app'];
-app.use(cors({ credentials: true, origin: allowedOrigins }));
+// const allowedOrigins = ['https://main--zesty-creponne-0bcae2.netlify.app'];
+app.use(cors({ credentials: true, origin: process.env.FRONTEND_API }));
 
 let imageType;
 import("image-type")
