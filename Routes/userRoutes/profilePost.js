@@ -56,8 +56,20 @@ module.exports = async (req, res) => {
         });
 
       // Handle certificates if it's an array
-      if (Array.isArray(certificates)) {
+      // if (Array.isArray(certificates)) {
+      //   await trx("certificates").where({ user_id }).del();
+      //   await trx("certificates").insert(
+      //     certificates.map((certificate) => ({
+      //       user_id,
+      //       certificate,
+      //     }))
+      //   );
+      // }
+      if (certificates && certificates.length > 0) {
+        // Delete existing certificates
         await trx("certificates").where({ user_id }).del();
+
+        // Insert new certificates
         await trx("certificates").insert(
           certificates.map((certificate) => ({
             user_id,
@@ -65,6 +77,8 @@ module.exports = async (req, res) => {
           }))
         );
       }
+
+
 
       // Handle experiences if it's an array
       if (Array.isArray(experiences)) {
