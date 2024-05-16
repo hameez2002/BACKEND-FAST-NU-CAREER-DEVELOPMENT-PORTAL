@@ -56,20 +56,8 @@ module.exports = async (req, res) => {
         });
 
       // Handle certificates if it's an array
-      // if (Array.isArray(certificates)) {
-      //   await trx("certificates").where({ user_id }).del();
-      //   await trx("certificates").insert(
-      //     certificates.map((certificate) => ({
-      //       user_id,
-      //       certificate,
-      //     }))
-      //   );
-      // }
-      if (certificates && certificates.length > 0) {
-        // Delete existing certificates
+      if (Array.isArray(certificates)) {
         await trx("certificates").where({ user_id }).del();
-
-        // Insert new certificates
         await trx("certificates").insert(
           certificates.map((certificate) => ({
             user_id,
@@ -77,24 +65,13 @@ module.exports = async (req, res) => {
           }))
         );
       }
+      
 
 
 
       // Handle experiences if it's an array
-      // if (Array.isArray(experiences)) {
-      //   await trx("experiences").where({ user_id }).del();
-      //   await trx("experiences").insert(
-      //     experiences.map((experience) => ({
-      //       user_id,
-      //       experience,
-      //     }))
-      //   );
-      // }
-      if (experiences && experiences.length > 0) {
-        // Delete existing experiences
+      if (Array.isArray(experiences)) {
         await trx("experiences").where({ user_id }).del();
-
-        // Insert new experiences
         await trx("experiences").insert(
           experiences.map((experience) => ({
             user_id,
@@ -102,26 +79,18 @@ module.exports = async (req, res) => {
           }))
         );
       }
-
+      
       // Insert into profiles table if it's an array
-    //   if (Array.isArray(profiles)) {
-    //     await trx("profiles").insert(
-    //       profiles.map((profile) => ({
-    //         user_id,
-    //         ...profile,
-    //       }))
-    //     );
-    //   }
-    // });
-    if (profiles && profiles.length > 0) {
-      await trx("profiles").insert(
-        profiles.map((profile) => ({
-          user_id,
-          ...profile,
-        }))
-      );
-    }
-  });
+      if (Array.isArray(profiles)) {
+        await trx("profiles").insert(
+          profiles.map((profile) => ({
+            user_id,
+            ...profile,
+          }))
+        );
+      }
+    });
+    
 
     console.log("Profile data updated successfully");
     return res.status(200).json({ message: "Profile data updated successfully" });

@@ -52,7 +52,7 @@ import("image-type")
     console.error("Error importing image-type:", err);
   });
 
-  app.use(cors({ credentials: true, origin: "https://main--zesty-creponne-0bcae2.netlify.app" }));
+  // app.use(cors({ credentials: true, origin: "https://main--zesty-creponne-0bcae2.netlify.app" }));
 
 //job apis
 app.post("/jobs", jobsPost);
