@@ -4,14 +4,14 @@ module.exports = async (req, res) => {
   const job_id = req.params.job_id;
   const {
     title,
-    no_of_openings,
+    // no_of_openings,
     qualifications_req,
     job_description,
     link,
-    Deadline,
-    responsibilities,
-    about,
-    job_status,
+    // Deadline,
+    // responsibilities,
+    // about,
+    // job_status,
     job_type,
     posted_on,
     updated_on,
@@ -19,20 +19,21 @@ module.exports = async (req, res) => {
 
   try {
     const sql =
-      "UPDATE cso_jobs SET title = ?, job_type = ?, no_of_openings = ?, qualifications_req = ?, job_description = ?, link = ?, Deadline = ?, responsibilities = ?, about = ?, job_status = ?, posted_on = ?, updated_on = ? WHERE job_id = ?";
+      "UPDATE cso_jobs SET title = ?, job_type = ?, qualifications_req = ?, job_description = ?, link = ?, posted_on = ?, updated_on = ? WHERE job_id = ?";
+      // "UPDATE cso_jobs SET title = ?, job_type = ?, no_of_openings = ?, qualifications_req = ?, job_description = ?, link = ?, Deadline = ?, responsibilities = ?, about = ?, job_status = ?, posted_on = ?, updated_on = ? WHERE job_id = ?";
     con.query(
       sql,
       [
         title,
         job_type,
-        no_of_openings,
+        // no_of_openings,
         qualifications_req,
         job_description,
         link,
-        Deadline,
-        responsibilities,
-        about,
-        job_status,
+        // Deadline,
+        // responsibilities,
+        // about,
+        // job_status,
         posted_on,
         updated_on,
         job_id,

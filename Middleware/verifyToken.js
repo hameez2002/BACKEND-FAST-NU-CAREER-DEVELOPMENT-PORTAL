@@ -29,36 +29,3 @@ const verifyToken = (req, res, next) => {
 module.exports = verifyToken;
 
 
-
-// const jwt = require("jsonwebtoken");
-
-// const secretKey = process.env.JWT_SECRET_KEY;
-
-// const verifyToken = (req, res, next) => {
-//   const authorizationHeader = req.headers.authorization;
-//   if (!authorizationHeader) {
-//     console.log(res.status(401).json({ error: "Unauthorized" }));
-//     return res.status(401).json({ error: "Unauthorized" });
-//   }
-
-//   const token = authorizationHeader.split(" ")[1];
-//   if (!token) {
-//     console.log(res.status(401).json({ error: "Unauthorized" }));
-//     return res.status(401).json({ error: "Unauthorized" });
-//   }
-
-//   jwt.verify(token, secretKey, (err, decoded) => {
-//     if (err) {
-//       console.log(res.status(401).json({ error: "Invalid token" }));
-//       return res.status(401).json({ error: "Invalid token" });
-//     }
-//     console.log("Token verified");
-
-//     // Store user ID and role in request object for further use
-//     req.userId = decoded.userId;
-//     req.userRole = decoded.userRole;
-//     next();
-//   });
-// };
-
-// module.exports = verifyToken;

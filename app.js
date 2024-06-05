@@ -4,9 +4,12 @@ const express = require("express");
 const bodyParser = require("body-parser");
 const cors = require("cors");
 const verifyToken = require("./Middleware/verifyToken.js");
-const { BlobServiceClient, generateBlobSASQueryParameters, BlobSASPermissions } = require("@azure/storage-blob");
+const {
+  BlobServiceClient,
+  generateBlobSASQueryParameters,
+  BlobSASPermissions,
+} = require("@azure/storage-blob");
 require("dotenv").config();
-// const imageType = require('image-type');
 
 //jobs routes
 const jobsPost = require("./Routes/jobsPost.js");
@@ -33,7 +36,7 @@ app.use(cors({ credentials: true, origin: "http://localhost:3000" }));
 const port = 7000;
 
 app.use(bodyParser.urlencoded({ extended: false }));
-app.use(bodyParser.json());
+app.use(bodyParser.json({ limit: "50mb" })); // Set max payload size limit
 
 
 
@@ -60,7 +63,7 @@ import('image-type').then(module => {
   console.error('Error importing image-type:', err);
 });
 
-
+  // app.use(cors({ credentials: true, origin: "https://main--zesty-creponne-0bcae2.netlify.app" }));
 
 //job apis
 // app.post("/jobs", jobsPost);
@@ -75,15 +78,16 @@ import('image-type').then(module => {
 app.use("/email", emailRoutes);
 
 //user profile apis
-app.post("/profile", profilePost);
-app.get("/profile/:user_id", getProfile);
-app.get("/profile", profileGetAll);
+// app.post("/profile", profilePost);
+// app.get("/profile/:user_id", getProfile);
+// app.get("/profile", profileGetAll);
 
 
 //AZURE BLOB STORAGE CONTAINER Connectivity
 const connectionString = "DefaultEndpointsProtocol=https;AccountName=cdp3;AccountKey=hzfOj//gM6C8mvt5xh0WkGuqYOp36lFLrR3TGiua/TxxdqMBNFxKfJjO9PVkoaUI9H4wV9duSOKF+AStYfNyKA==;EndpointSuffix=core.windows.net";
 const containerName = process.env.AZURE_STORAGE_CONTAINER_NAME;
-const blobServiceClient = BlobServiceClient.fromConnectionString(connectionString);
+const blobServiceClient =
+  BlobServiceClient.fromConnectionString(connectionString);
 const containerClient = blobServiceClient.getContainerClient(containerName);
 
 // Multer setup
@@ -104,7 +108,7 @@ mongoose.connect(process.env.MONGODB_CONNECT_URI);
 const Post = require("./api/models/Post");
 
 // Import Readable class from stream module
-const { Readable } = require('stream');
+const { Readable } = require("stream");
 
 // Route for creating a new post
 app.post("/newsfeed/createPost", upload.single("file"), async (req, res) => {
@@ -115,21 +119,25 @@ app.post("/newsfeed/createPost", upload.single("file"), async (req, res) => {
 
     // Detect image type
     const imageMimeType = imageType(file.buffer);
-    const contentType = imageMimeType ? `image/${imageMimeType.ext}` : 'application/octet-stream';
+    const contentType = imageMimeType
+      ? `image/${imageMimeType.ext}`
+      : "application/octet-stream";
 
     // Upload file to Azure Blob Storage
     const blobName = `${Date.now()}-${file.originalname}`;
     console.log(file.originalname);
     const blockBlobClient = containerClient.getBlockBlobClient(blobName);
-    
+
     // Create a readable stream from the file buffer
     const stream = Readable.from(file.buffer);
     console.log(stream);
-    
+
     // Upload the stream to Azure Blob Storage
-    await blockBlobClient.uploadStream(stream, undefined, undefined, { blobHTTPHeaders: { blobContentType: contentType } });
+    await blockBlobClient.uploadStream(stream, undefined, undefined, {
+      blobHTTPHeaders: { blobContentType: contentType },
+    });
     console.log(blockBlobClient.url);
-    
+
     // Save post with file URL
     const postDoc = await Post.create({
       title,
@@ -145,7 +153,6 @@ app.post("/newsfeed/createPost", upload.single("file"), async (req, res) => {
   }
 });
 
-
 // Route for updating an existing post
 // updatepost put api
 app.put("/newsfeed/post/:id", upload.single("cover"), async (req, res) => {
@@ -158,12 +165,16 @@ app.put("/newsfeed/post/:id", upload.single("cover"), async (req, res) => {
     if (file) {
       // Handle cover image upload
       const imageMimeType = imageType(file.buffer);
-      const contentType = imageMimeType ? `image/${imageMimeType.ext}` : 'application/octet-stream';
+      const contentType = imageMimeType
+        ? `image/${imageMimeType.ext}`
+        : "application/octet-stream";
 
       const blobName = `${Date.now()}-${file.originalname}`;
       const blockBlobClient = containerClient.getBlockBlobClient(blobName);
       const stream = Readable.from(file.buffer);
-      await blockBlobClient.uploadStream(stream, undefined, undefined, { blobHTTPHeaders: { blobContentType: contentType } });
+      await blockBlobClient.uploadStream(stream, undefined, undefined, {
+        blobHTTPHeaders: { blobContentType: contentType },
+      });
       coverUrl = blockBlobClient.url;
     }
 
@@ -175,7 +186,9 @@ app.put("/newsfeed/post/:id", upload.single("cover"), async (req, res) => {
       ...(coverUrl && { cover: coverUrl }), // Update cover URL if cover image is provided
     };
 
-    const updatedPost = await Post.findByIdAndUpdate(id, updatedFields, { new: true });
+    const updatedPost = await Post.findByIdAndUpdate(id, updatedFields, {
+      new: true,
+    });
 
     res.json(updatedPost);
   } catch (error) {
@@ -183,7 +196,6 @@ app.put("/newsfeed/post/:id", upload.single("cover"), async (req, res) => {
     res.status(500).json({ error: "Internal Server Error" });
   }
 });
-
 
 app.delete("/newsfeed/delete/:id", async (req, res) => {
   const { id } = req.params;
@@ -222,11 +234,16 @@ app.get("/newsfeed/post", async (req, res) => {
   res.json(await Post.find().sort({ createdAt: -1 }).limit(20)); //.populate('author', ['username'])
 });
 
-app.get("/newsfeed/post/:id", async (req, res) => { 
+app.get("/newsfeed/post/:id", async (req, res) => {
   console.log("hello1");
   const { id } = req.params;
   const postDoc = await Post.findById(id); //.populate('author', ['username']);
   res.json(postDoc);
 });
+
+//user profile apis
+app.post("/profile", upload.any(), profilePost);
+app.get("/profile/:user_id", getProfile);
+app.get("/profile", profileGetAll);
 
 app.listen(port, () => console.log(`server running on ${port}`));

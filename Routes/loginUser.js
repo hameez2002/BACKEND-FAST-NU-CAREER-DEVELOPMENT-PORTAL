@@ -5,6 +5,7 @@ const secretKey ="eyJhbGciOiJIUzI1NiJ9.eyJSb2xlIjoiQWRtaW4iLCJJc3N1ZXIiOiJJc3N1Z
 
 module.exports = async (req, res) => {
   const { user_id, password } = req.body;
+  console.log("In login user.js");
   try {
     db.query(
       "SELECT * FROM sign_in WHERE user_id = ?",

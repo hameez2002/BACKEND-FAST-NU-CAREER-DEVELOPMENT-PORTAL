@@ -4,34 +4,35 @@ module.exports = (req, res) => {
   console.log("Received request body:", req.body);
   const {
     jobTitle: title,
-    noOfOpenings: no_of_openings,
+    // noOfOpenings: no_of_openings,
     qualificationRequirements: qualifications_req,
     jobDescription: job_description,
     jobLink: link,
-    deadlineDate: Deadline,
-    responsibilities,
-    about,
-    jobStatus: job_status,
+    // deadlineDate: Deadline,
+    // responsibilities,
+    // about,
+    // jobStatus: job_status,
     jobType: job_type,
     postedOn: posted_on,
     updatedOn: updated_on,
   } = req.body;
 
   const sql =
-    "INSERT INTO cso_jobs (title, job_type, no_of_openings, qualifications_req, job_description,link, Deadline, responsibilities, about, job_status,posted_on,updated_on) VALUES (?, ?, ?, ?, ?,?,?,?,?,?,?,?)";
+    "INSERT INTO cso_jobs (title, job_type, qualifications_req, job_description,link, posted_on,updated_on) VALUES (?, ?, ?, ?, ?,?,?)";
+    // "INSERT INTO cso_jobs (title, job_type, no_of_openings, qualifications_req, job_description,link, Deadline, responsibilities, about, job_status,posted_on,updated_on) VALUES (?, ?, ?, ?, ?,?,?,?,?,?,?,?)";
   con.query(
     sql,
     [
       title,
       job_type,
-      no_of_openings,
+      // no_of_openings,
       qualifications_req,
       job_description,
       link,
-      Deadline,
-      responsibilities,
-      about,
-      job_status,
+      // Deadline,
+      // responsibilities,
+      // about,
+      // job_status,
       posted_on,
       updated_on,
     ],
